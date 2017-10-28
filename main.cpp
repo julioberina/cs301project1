@@ -30,7 +30,6 @@ int main()
     string holder; // holds string of a matrix [row][col] value
     vector<vector<float>> matrix;
     vector<float> uniqueSolution;
-    stringstream fss;
 
     cout << "Enter file name to read matrix from: ";
     getline(cin, fname);
@@ -40,11 +39,10 @@ int main()
         return 1;
 
     // Determine the dimensions of the matrix
-    while (!iFile.eof())
+    while (getline(iFile, matrixLine))
     {
+        stringstream fss(matrixLine);
         vector<float> rowVec;
-        getline(iFile, matrixLine);
-        fss << matrixLine;
 
         while (!fss.eof())
         {
@@ -65,15 +63,12 @@ int main()
     }
 
     cout << "Unique solution:" << endl;
-    cout << "(";
 
     for (int i = 0; i < uniqueSolution.size(); ++i)
-    {
-        cout << uniqueSolution[i];
-        cout << (i == (uniqueSolution.size() - 1)) ? ", " : "";
-    }
+        cout << uniqueSolution[i] << " ";
 
-    cout << ")" << endl;
+    cout << endl;
+
     return 0;
 }
 
@@ -111,6 +106,7 @@ vector<vector<float>> cramerMatrix(vector<vector<float>> matrix, int col)
         temp = matrix[row][col];
         matrix[row][col] = matrix[row][solColumn];
         matrix[row][solColumn] = temp;
+        matrix[row].pop_back();
     }
 
     return matrix;
@@ -132,7 +128,7 @@ vector<float> solve(const vector<vector<float>>& matrix)
     float det = determinant(augmentedMatrix(matrix));
     int colSize = matrix[0].size() - 1; // take any row of the matrix to get column size minus solution vector
 
-    if (det > 0)
+    if (det != 0)
     {
         for (int c = 0; c < colSize; ++c)
             unique.push_back((determinant(cramerMatrix(matrix, c)) / det));
